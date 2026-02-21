@@ -1,0 +1,18 @@
+[submodule "co-api-owner"]
+	path = co-api-owner
+	url = https://github.com/Z377A1/co-api-owner.git
+[submodule "co-api-franchise"]
+	path = co-api-franchise
+	url = https://github.com/Z377A1/co-api-franchise.git
+[submodule "co-api-movie"]
+	path = co-api-movie
+	url = https://github.com/Z377A1/co-api-movie.git
+[submodule "CoApiBoxOffice"]
+	path = CoApiBoxOffice
+	url = https://github.com/Z377A1/CoApiBoxOffice.git
+[submodule "CoApiCastMember"]
+	path = CoApiCastMember
+	url = https://github.com/Z377A1/CoApiCastMember.git
+[submodule "CoApiImage"]
+	path = CoApiImage
+	url = https://github.com/Z377A1/CoApiImage.git
