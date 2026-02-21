@@ -1,0 +1,136 @@
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  postgresql:
+
+services:
+  gateway:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - default
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - rust-api
+      - go-api
+      - bun-api
+      - java-api
+      - csharp-api
+      - kotlin-api
+
+  postgres:
+    image: postgres:18-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cinematicorder
+    ports:
+      - "5432:5432"
+    networks:
+      - default
+    volumes:
+      - postgresql:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  rust-api:
+    build: ./co-api-owner
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/cinematicorder
+      PORT: 8001
+    networks:
+      - default
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  go-api:
+    build: ./co-api-franchise
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/cinematicorder
+      PORT: 8002
+      GIN_MODE: release
+    networks:
+      - default
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  bun-api:
+    build: ./co-api-movie
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/cinematicorder
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: cinematicorder
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      PORT: 8003
+    networks:
+      - default
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  java-api:
+    build: ./CoApiBoxOffice
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cinematicorder
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SERVER_PORT: 8004
+    networks:
+      - default
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  csharp-api:
+    build: ./CoApiCastMember
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # bind only HTTP, avoid certificate issues in container
+      ASPNETCORE_URLS: http://+:8005
+      ASPNETCORE_HTTP_PORTS: 8005
+      ASPNETCORE_HTTPS_PORTS: 8081
+      ConnectionStrings__DefaultConnection: Host=postgres;Username=postgres;Password=postgres;Database=cinematicorder
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/cinematicorder
+      PORT: 8005
+    networks:
+      - default
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  kotlin-api:
+    build: ./CoApiImage
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cinematicorder
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SERVER_PORT: 8006
+    networks:
+      - default
+    depends_on:
+      postgres:
+        condition: service_healthy

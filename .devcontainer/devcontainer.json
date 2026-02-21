@@ -1,0 +1,64 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+	"name": "Ubuntu",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/base:noble",
+	
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/devcontainers/features/rust:1": {},
+		"ghcr.io/devcontainers/features/go:1": {},
+		"ghcr.io/devcontainers-extra/features/bun:1": {},
+		"ghcr.io/devcontainers/features/java:1": {
+			"version": "25",
+			"additionalVersions": "24",
+			"installMaven": true,
+			"installGradle": true
+		},
+		"ghcr.io/devcontainers/features/dotnet:2": {
+			"version": "lts",
+			"dotnetRuntimeVersions": "lts",
+			"aspNetCoreRuntimeVersions": "lts"
+		},
+		"ghcr.io/devcontainers-extra/features/kotlin-sdkman:2": {
+			"jdkVersion": "24"
+		},
+		"ghcr.io/devcontainers-extra/features/springboot-sdkman": {
+			"jdkVersion": "25"
+		},
+		"ghcr.io/devcontainers-extra/features/uv": {}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [80, 8080],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "wget https://download-cdn.jetbrains.com/kotlin-lsp/261.13587.0/kotlin-lsp-261.13587.0-linux-x64.vsix && uv venv venv && uv pip install requests",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ahmadalli.vscode-nginx-conf",
+				"humao.rest-client",
+				"ms-dotnettools.csdevkit",
+				"esbenp.prettier-vscode",
+				"ms-python.python",
+				"ms-azuretools.vscode-docker",
+				"docker.docker",
+				"dbaeumer.vscode-eslint",
+				"github.vscode-github-actions",
+				"redhat.fabric8-analytics",
+				"charliermarsh.ruff",
+				"vmware.vscode-boot-dev-pack",
+				"gruntfuggly.todo-tree",
+				"redhat.vscode-yaml"
+			]
+		}
+	}
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}

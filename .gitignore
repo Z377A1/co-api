@@ -1,0 +1,7 @@
+/co-api.sln
+/co-api.slnx
+
+venv
+.venv
+
+kotlin-lsp-*.vsix
